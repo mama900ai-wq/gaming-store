@@ -1,5 +1,8 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": ".next/static",
-  "framework": "nextjs"
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_APP_NAME": "Gaming Store"
+  }
 }
