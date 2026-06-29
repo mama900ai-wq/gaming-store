@@ -1,0 +1,575 @@
+hereimport React, { useState } from 'react';
+import { ShoppingCart, Phone, X, Plus, Minus } from 'lucide-react';
+
+export default function GamingStore() {
+  const [language, setLanguage] = useState('ar');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    gameId: ''
+  });
+
+  const translations = {
+    ar: {
+      storeName: 'متجر الفردوس الإلكتروني',
+      subtitle: 'شحن فوري لأفضل الألعاب',
+      welcome: 'مرحباً بك في متجرنا الإلكتروني',
+      products: 'المنتجات',
+      contact: 'تواصل معنا',
+      cart: 'السلة',
+      checkout: 'إتمام الطلب',
+      addToCart: 'أضف للسلة',
+      remove: 'حذف',
+      quantity: 'الكمية',
+      total: 'الإجمالي',
+      usd: 'دولار',
+      price: 'السعر',
+      orderForm: 'نموذج الطلب',
+      name: 'الاسم الكامل',
+      email: 'البريد الإلكتروني',
+      phone: 'رقم الهاتف',
+      gameId: 'معرف اللاعب / UID',
+      selectGame: 'اختر اللعبة',
+      submitOrder: 'تأكيد الطلب',
+      bankInfo: 'تحويل بنكي: بنك الخرطوم',
+      contactInfo: 'رقم التواصل: +249909056304',
+      emptycart: 'السلة فارغة',
+      confirmOrder: 'تم استلام طلبك! سيتم التواصل معك قريباً.',
+      backToShop: 'العودة للمتجر',
+      freefire: 'فري فاير',
+      clasofclans: 'كلاش أوف كلانس',
+      efootball: 'eFootball',
+      loginTitle: 'متجر الفردوس',
+      loginSubtitle: 'AL-FIRDAWS ONLINE STORE',
+      username: 'اسم المستخدم',
+      password: 'كلمة المرور',
+      login: 'دخول',
+      logout: 'خروج',
+      demoAccount: 'حساب تجريبي: admin / 123456',
+      enterDetails: 'الرجاء إدخال البيانات'
+    },
+    en: {
+      storeName: 'Al-Firdawsah Gaming Store',
+      subtitle: 'Fast & Reliable Top-ups',
+      welcome: 'Welcome to Our Gaming Store',
+      products: 'Products',
+      contact: 'Contact',
+      cart: 'Cart',
+      checkout: 'Checkout',
+      addToCart: 'Add to Cart',
+      remove: 'Remove',
+      quantity: 'Quantity',
+      total: 'Total',
+      usd: 'USD',
+      price: 'Price',
+      orderForm: 'Order Form',
+      name: 'Full Name',
+      email: 'Email',
+      phone: 'Phone Number',
+      gameId: 'Player ID / UID',
+      selectGame: 'Select Game',
+      submitOrder: 'Confirm Order',
+      bankInfo: 'Bank Transfer: Al-Baraka Bank',
+      contactInfo: 'Contact: +249909056304',
+      emptycart: 'Cart is empty',
+      confirmOrder: 'Your order received! We will contact you shortly.',
+      backToShop: 'Back to Shop',
+      freefire: 'Free Fire',
+      clasofclans: 'Clash of Clans',
+      efootball: 'eFootball',
+      loginTitle: 'Al-Firdaws Store',
+      loginSubtitle: 'AL-FIRDAWS ONLINE STORE',
+      username: 'Username',
+      password: 'Password',
+      login: 'Login',
+      logout: 'Logout',
+      demoAccount: 'Demo: admin / 123456',
+      enterDetails: 'Please enter your details'
+    }
+  };
+
+  const t = translations[language];
+  const isArabic = language === 'ar';
+  const dir = isArabic ? 'rtl' : 'ltr';
+
+  const products = [
+    {
+      id: 1,
+      name: t.freefire,
+      game: 'freefire',
+      packages: [
+        { amount: 100, price: 1, bonus: 10 },
+        { amount: 500, price: 5, bonus: 50 },
+        { amount: 1000, price: 10, bonus: 100 },
+        { amount: 2000, price: 20, bonus: 200 },
+        { amount: 5000, price: 50, bonus: 500 },
+        { amount: 10000, price: 100, bonus: 1000 }
+      ],
+      image: '💎',
+      color: 'from-orange-500 to-red-600',
+      hasBonus: true
+    },
+    {
+      id: 2,
+      name: t.clasofclans,
+      game: 'clashofclans',
+      packages: [
+        { amount: 80, price: 1 },
+        { amount: 400, price: 5 },
+        { amount: 800, price: 10 },
+        { amount: 1600, price: 20 },
+        { amount: 4000, price: 50 },
+        { amount: 8000, price: 100 }
+      ],
+      image: '⚔️',
+      color: 'from-purple-500 to-blue-600'
+    },
+    {
+      id: 3,
+      name: t.efootball,
+      game: 'efootball',
+      packages: [
+        { amount: 130, price: 1 },
+        { amount: 650, price: 5 },
+        { amount: 1300, price: 10 },
+        { amount: 2600, price: 20 },
+        { amount: 6500, price: 50 },
+        { amount: 13000, price: 100 }
+      ],
+      image: 'efootball_logo',
+      color: 'from-blue-700 to-yellow-400',
+      isCustomLogo: true
+    }
+  ];
+
+  const addToCart = (product, packageItem) => {
+    const cartItem = {
+      id: `${product.id}-${packageItem.amount}`,
+      name: product.name,
+      game: product.game,
+      amount: packageItem.amount,
+      bonus: packageItem.bonus || 0,
+      price: packageItem.price,
+      quantity: 1,
+      hasBonus: product.hasBonus
+    };
+
+    setCart(prev => {
+      const exists = prev.find(item => item.id === cartItem.id);
+      if (exists) {
+        return prev.map(item =>
+          item.id === cartItem.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prev, cartItem];
+    });
+  };
+
+  const removeFromCart = (id) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateQuantity = (id, qty) => {
+    if (qty <= 0) {
+      removeFromCart(id);
+    } else {
+      setCart(prev =>
+        prev.map(item =>
+          item.id === id ? { ...item, quantity: qty } : item
+        )
+      );
+    }
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const handleSubmitOrder = (e) => {
+    e.preventDefault();
+    if (formData.name && formData.email && formData.phone && formData.gameId && cart.length > 0) {
+      console.log('Order submitted:', { formData, cart, total: cartTotal });
+      alert(t.confirmOrder);
+      setFormData({ name: '', email: '', phone: '', gameId: '' });
+      setCart([]);
+      setShowCheckout(false);
+      setShowCart(false);
+    }
+  };
+
+  return (
+    <div dir={dir} className={`min-h-screen ${isArabic ? 'font-arabic' : ''}`} style={{ backgroundColor: '#0f172a' }}>
+      {/* Login Screen */}
+      {!isLoggedIn && (
+        <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(15, 23, 42, 0.98)' }}>
+          <div className="text-center max-w-md mx-auto px-4">
+            {/* Logo */}
+            <div className="mb-8 flex justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full blur-xl opacity-50"></div>
+                <div className="relative w-40 h-40 bg-white rounded-full p-4 flex items-center justify-center shadow-2xl">
+                  <div className="text-8xl">🎮</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Store Name */}
+            <h1 className="text-4xl font-bold text-white mb-2">متجر الفردوس</h1>
+            <p className="text-lg text-blue-400 mb-2">AL-FIRDAWS</p>
+            <p className="text-slate-400 mb-8">ONLINE STORE</p>
+
+            {/* Login Form */}
+            <div className="rounded-lg border border-slate-700 p-8 shadow-2xl" style={{ backgroundColor: '#1e293b' }}>
+              <div className="space-y-4 mb-6">
+                <div>
+                  <input
+                    type="text"
+                    placeholder={isArabic ? 'اسم المستخدم' : 'Username'}
+                    value={loginData.username}
+                    onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder={isArabic ? 'كلمة المرور' : 'Password'}
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition"
+                    onKeyPress={(e) => e.key === 'Enter' && loginData.username && loginData.password && setIsLoggedIn(true)}
+                  />
+                </div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  if (loginData.username && loginData.password) {
+                    setIsLoggedIn(true);
+                  } else {
+                    alert(t.enterDetails);
+                  }
+                }}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded transition shadow-lg"
+              >
+                {t.login}
+              </button>
+              
+              <p className="text-slate-400 text-sm mt-6 pt-4 border-t border-slate-600">
+                {t.demoAccount}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content - Only show when logged in */}
+      {isLoggedIn && (
+        <>
+          {/* Header */}
+          <header className="border-b border-slate-700 sticky top-0 z-50" style={{ backgroundColor: '#1e293b' }}>
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full p-1 flex items-center justify-center">
+                  <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center text-xl">🎮</div>
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-white leading-tight">{t.storeName}</h1>
+                  <p className="text-xs text-slate-400">{t.subtitle}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+                  className="px-3 py-1 text-sm rounded bg-slate-700 text-white hover:bg-slate-600 transition"
+                >
+                  {language === 'ar' ? 'EN' : 'AR'}
+                </button>
+                <button
+                  onClick={() => setShowCart(!showCart)}
+                  className="relative p-2 hover:bg-slate-700 rounded transition"
+                >
+                  <ShoppingCart className="w-6 h-6 text-white" />
+                  {cart.length > 0 && (
+                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                      {cart.length}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => setIsLoggedIn(false)}
+                  className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700 transition font-medium"
+                >
+                  {t.logout}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            {!showCheckout ? (
+              <>
+                {/* Hero Section */}
+                <div className="mb-12 text-center">
+                  <h2 className="text-4xl font-bold text-white mb-4">{t.welcome}</h2>
+                  <p className="text-slate-300 text-lg mb-4">
+                    {isArabic ? 'شحن آمن وسريع لجميع ألعابك المفضلة' : 'Safe and fast top-ups for all your favorite games'}
+                  </p>
+                  <div className="inline-block bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full font-bold">
+                    🎁 {isArabic ? 'جواهر فري فاير +10% هدية على كل طلب' : '🎁 Free Fire +10% Bonus Gems on Every Order'}
+                  </div>
+                </div>
+
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                  {products.map(product => (
+                    <div
+                      key={product.id}
+                      className="rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition transform hover:scale-105 duration-300"
+                      style={{ backgroundColor: '#1e293b' }}
+                    >
+                      {/* Product Header */}
+                      <div className={`bg-gradient-to-r ${product.color} p-6 text-center`}>
+                        {product.isCustomLogo && product.image === 'efootball_logo' ? (
+                          <img src="./efootball_logo.jpg" alt="eFootball" className="w-24 h-24 mx-auto mb-3 object-contain rounded" />
+                        ) : (
+                          <div className="text-5xl mb-3">{product.image}</div>
+                        )}
+                        <h3 className="text-2xl font-bold text-white drop-shadow-lg">{product.name}</h3>
+                      </div>
+
+                      {/* Packages */}
+                      <div className="p-6">
+                        <div className="space-y-3">
+                          {product.packages.map((pkg, idx) => (
+                            <div
+                              key={idx}
+                              className="flex flex-col p-3 rounded bg-slate-800 hover:bg-slate-700 transition"
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div>
+                                  <p className="font-semibold text-white">
+                                    {pkg.amount} {product.game === 'freefire' ? 'Diamond' : product.game === 'clashofclans' ? 'Gem' : 'Coin'}
+                                  </p>
+                                  {product.hasBonus && pkg.bonus && (
+                                    <p className="text-xs text-green-400 font-bold">
+                                      + {pkg.bonus} {product.game === 'freefire' ? 'Diamond' : 'Gem'} {isArabic ? 'هدية' : 'FREE'}
+                                    </p>
+                                  )}
+                                  <p className="text-sm text-slate-400">${pkg.price}</p>
+                                </div>
+                                <button
+                                  onClick={() => addToCart(product, pkg)}
+                                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition font-medium"
+                                >
+                                  {t.addToCart}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Contact Info */}
+                <div className="border-t border-slate-700 pt-8 text-center text-slate-300">
+                  <p className="mb-2">📱 {t.contactInfo}</p>
+                  <p>🏦 {t.bankInfo}</p>
+                </div>
+              </>
+            ) : (
+              /* Checkout View */
+              <div className="max-w-2xl mx-auto">
+                <button
+                  onClick={() => setShowCheckout(false)}
+                  className="mb-6 text-blue-400 hover:text-blue-300 flex items-center gap-2"
+                >
+                  ← {t.backToShop}
+                </button>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Order Summary */}
+                  <div className="rounded-lg border border-slate-700 p-6" style={{ backgroundColor: '#1e293b' }}>
+                    <h3 className="text-xl font-bold text-white mb-4">{t.cart}</h3>
+                    {cart.length === 0 ? (
+                      <p className="text-slate-400">{t.emptycart}</p>
+                    ) : (
+                      <>
+                        <div className="space-y-4 mb-6">
+                          {cart.map(item => (
+                            <div key={item.id} className="flex items-center justify-between p-3 bg-slate-800 rounded">
+                              <div className="flex-1">
+                                <p className="font-semibold text-white">{item.name} - {item.amount}</p>
+                                {item.hasBonus && item.bonus > 0 && (
+                                  <p className="text-xs text-green-400 font-bold">+ {item.bonus} {isArabic ? 'جوهرة هدية' : 'FREE gems'}</p>
+                                )}
+                                <p className="text-sm text-slate-400">${item.price} {t.usd}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                  className="p-1 hover:bg-slate-700 rounded"
+                                >
+                                  <Minus className="w-4 h-4 text-white" />
+                                </button>
+                                <span className="w-8 text-center text-white font-semibold">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  className="p-1 hover:bg-slate-700 rounded"
+                                >
+                                  <Plus className="w-4 h-4 text-white" />
+                                </button>
+                              </div>
+                              <button
+                                onClick={() => removeFromCart(item.id)}
+                                className="ml-4 p-1 hover:bg-red-900 rounded text-red-400"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="border-t border-slate-600 pt-4">
+                          <div className="flex justify-between items-center text-lg font-bold text-white">
+                            <span>{t.total}:</span>
+                            <span className="text-green-400">${cartTotal.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Form */}
+                  <form onSubmit={handleSubmitOrder} className="rounded-lg border border-slate-700 p-6" style={{ backgroundColor: '#1e293b' }}>
+                    <h3 className="text-xl font-bold text-white mb-4">{t.orderForm}</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">{t.name}</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                          placeholder={t.name}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">{t.email}</label>
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                          placeholder={t.email}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">{t.phone}</label>
+                        <input
+                          type="tel"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                          placeholder="+249..."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">{t.gameId}</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.gameId}
+                          onChange={(e) => setFormData({ ...formData, gameId: e.target.value })}
+                          className="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                          placeholder="UID / Player ID"
+                        />
+                      </div>
+                      <div className="pt-4 border-t border-slate-600">
+                        <p className="text-sm text-slate-400 mb-3">💳 {t.bankInfo}</p>
+                        <p className="text-sm text-slate-400 mb-4">📞 {t.contactInfo}</p>
+                        <button
+                          type="submit"
+                          disabled={cart.length === 0}
+                          className="w-full py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold rounded transition"
+                        >
+                          {t.submitOrder}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cart Sidebar */}
+          {showCart && !showCheckout && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-start pt-20">
+              <div
+                className={`${isArabic ? 'ml-auto' : 'mr-auto'} w-full max-w-sm rounded-lg border border-slate-700 p-6 shadow-xl`}
+                style={{ backgroundColor: '#1e293b' }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white">{t.cart}</h3>
+                  <button onClick={() => setShowCart(false)}>
+                    <X className="w-6 h-6 text-white" />
+                  </button>
+                </div>
+
+                {cart.length === 0 ? (
+                  <p className="text-slate-400 text-center py-4">{t.emptycart}</p>
+                ) : (
+                  <>
+                    <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
+                      {cart.map(item => (
+                        <div key={item.id} className="flex items-center justify-between p-3 bg-slate-800 rounded">
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold text-white">{item.name}</p>
+                            {item.hasBonus && item.bonus > 0 && (
+                              <p className="text-xs text-green-400 font-bold">+ {item.bonus} {isArabic ? 'هدية' : 'FREE'}</p>
+                            )}
+                            <p className="text-xs text-slate-400">${item.price} × {item.quantity}</p>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="border-t border-slate-600 pt-4 mb-4">
+                      <div className="flex justify-between text-white font-bold mb-4">
+                        <span>{t.total}:</span>
+                        <span className="text-green-400">${cartTotal.toFixed(2)}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowCart(false);
+                          setShowCheckout(true);
+                        }}
+                        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded transition"
+                      >
+                        {t.checkout}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
