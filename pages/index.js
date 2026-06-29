@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { ShoppingCart, Phone, X, Plus, Minus } from 'lucide-react';
-import GamingStore from '../gaming_store';
+import React from 'react';
+import GamingStore from '../components/GamingStore';
 
 export default function Home() {
   return <GamingStore />;
